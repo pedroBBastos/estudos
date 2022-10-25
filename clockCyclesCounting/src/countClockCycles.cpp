@@ -29,7 +29,11 @@ namespace pedro::studies::countClockCycles {
         }
     }
 
-    void ClockCounter::produceReport() {
-        // to be done
+    std::ostream& operator<<(std::ostream& os, const ClockCounter& clockCounter) {
+        for(auto iterator = clockCounter.countMap.begin(); 
+            iterator != clockCounter.countMap.end(); ++iterator) {
+            os << iterator->first << " -> " << iterator->second << "\n";
+        }
+        return os;
     }
 }

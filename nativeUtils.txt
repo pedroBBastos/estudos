@@ -26,6 +26,11 @@ https://refspecs.linuxbase.org/elf/gabi4+/ch4.intro.html
 
 -------------------------------------------
 
+Overloading the << operator
+https://learn.microsoft.com/en-us/cpp/standard-library/overloading-the-output-operator-for-your-own-classes?view=msvc-170
+
+-------------------------------------------
+
 difference between include with quotes and brackets...
 https://www.geeksforgeeks.org/difference-between-include-and-include-in-c-c-with-examples
 
