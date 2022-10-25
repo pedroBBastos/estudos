@@ -12,6 +12,11 @@ https://stackoverflow.com/questions/5121442/how-to-count-cycles
 
 https://www.geeksforgeeks.org/chrono-in-c/
 
+https://www.tutorialspoint.com/c_standard_library/c_function_clock.htm
+The C library function clock_t clock(void) returns the number of clock ticks (processor time, as the linux man)
+elapsed since the program was launched. To get the number of seconds used by the
+CPU, you will need to divide by CLOCKS_PER_SEC.
+
 -------------------------------------------
 
 Optimization flags
@@ -56,3 +61,14 @@ So, to enable C++ to use C code, they are all declared in an 'extern "C"' block
 https://www.geeksforgeeks.org/extern-c-in-c/
 
 -------------------------------------------
+
+Testes unitários
+https://google.github.io/googletest/primer.html
+
+-------------------------------------------
+
+TODO
+  lib para contagem de ciclos de clock
+  projeto com CMake linkando libs dinamicas
+  projeto com OATPP
+  testes unitarios com gtest
