@@ -1,0 +1,58 @@
+https://www.geeksforgeeks.org/c-plus-plus/
+
+-------------------------------------------
+
+Makefile tutorail
+https://makefiletutorial.com/
+
+-------------------------------------------
+
+counting clock cycles
+https://stackoverflow.com/questions/5121442/how-to-count-cycles
+
+https://www.geeksforgeeks.org/chrono-in-c/
+
+-------------------------------------------
+
+Optimization flags
+https://www.rapidtables.com/code/linux/gcc/gcc-o.html
+
+https://refspecs.linuxbase.org/elf/gabi4+/ch4.intro.html
+
+-------------------------------------------
+
+difference between include with quotes and brackets...
+https://www.geeksforgeeks.org/difference-between-include-and-include-in-c-c-with-examples
+
+-------------------------------------------
+
+Default constructors
+https://en.cppreference.com/w/cpp/language/default_constructor
+
+-------------------------------------------
+
+Criando bibliotecas dinâmicas
+https://iq.opengenus.org/create-shared-library-in-cpp/
+
+-------------------------------------------
+
+Lembrar que gcc/g++ não são apenas compilers!! São linkers tbem!!!!
+Quando criamos um executável, gcc/g++ está compilando E linkando...
+E tbem podemos fazer apenas um ou outro (compilação e/ou linking)
+
+ "For example, the -c option says not to run the linker.  Then the
+ output consists of object files output"
+
+-------------------------------------------
+
+readelf -d  /path/to/library.so | grep SONAME
+
+-------------------------------------------
+
+Name mangling -> C++ compilers do that (changing the name of a
+function to allow function overloading). But C language doesn't have function overloading.
+So, to enable C++ to use C code, they are all declared in an 'extern "C"' block
+
+https://www.geeksforgeeks.org/extern-c-in-c/
+
+-------------------------------------------
