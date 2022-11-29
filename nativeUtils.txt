@@ -72,8 +72,26 @@ https://google.github.io/googletest/primer.html
 
 -------------------------------------------
 
+int myNumbers[5] = {10, 20, 30, 40, 50};
+int getArrayLength = sizeof(myNumbers) / sizeof(int);
+cout << getArrayLength;
+
+-------------------------------------------
+
+https://www.geeksforgeeks.org/multithreading-in-cpp/
+
+-------------------------------------------
+
+copy array
+https://stackoverflow.com/questions/12328301/cleanest-way-to-copy-a-constant-size-array-in-c11
+
+-------------------------------------------
+
 TODO
-  lib para contagem de ciclos de clock
+  lib para contagem de ciclos de clock - ok
   projeto com CMake linkando libs dinamicas
   projeto com OATPP
+    -> loggers debug/info
   testes unitarios com gtest
+  estudar JNA
+  Adress Sanitizer (ASAN)
