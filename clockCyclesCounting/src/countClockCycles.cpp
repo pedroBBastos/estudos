@@ -30,9 +30,15 @@ namespace pedro::studies::countClockCycles {
     }
 
     std::ostream& operator<<(std::ostream& os, const ClockCounter& clockCounter) {
+        clock_t sum = 0;
         for(auto iterator = clockCounter.countMap.begin(); 
             iterator != clockCounter.countMap.end(); ++iterator) {
-            os << iterator->first << " -> " << iterator->second << "\n";
+            sum += iterator->second;
+        }
+        os << "sum -> " << sum << "\n";
+        for(auto iterator = clockCounter.countMap.begin();
+            iterator != clockCounter.countMap.end(); ++iterator) {
+            os << iterator->first << " -> " << iterator->second << " (" << ((double)iterator->second / sum) * 100 << "%)"<< "\n";
         }
         return os;
     }
