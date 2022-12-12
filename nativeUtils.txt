@@ -87,6 +87,15 @@ https://stackoverflow.com/questions/12328301/cleanest-way-to-copy-a-constant-siz
 
 -------------------------------------------
 
+https://stackoverflow.com/questions/2692383/convert-struct-into-bytes
+https://stackoverflow.com/questions/3318410/pragma-pack-effect
+
+
+https://stackoverflow.com/questions/2301007/determine-word-size-of-my-processor
+
+https://stackoverflow.com/questions/19995440/c-cast-byte-array-to-struct
+-------------------------------------------
+
 TODO
   lib para contagem de ciclos de clock - ok
   projeto com CMake linkando libs dinamicas
