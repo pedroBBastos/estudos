@@ -2,11 +2,12 @@
 #include <limits.h>
 #include <cstring>
 
+#pragma pack(2)
 struct MyStruct
 {
-    short qualityPlusAngle;
-    short x;
-    short yPlusType;
+    short brabas;
+    int frubas;
+    // short brabas;
 };
 
 struct OtherStruct {
@@ -16,7 +17,8 @@ struct OtherStruct {
 OtherStruct giveMeAStruct() {
     OtherStruct bla;
     for (int i=0; i<10; i++) {
-        bla.array[i] = {(short)i, (short)(i+1), (short)(i+2)};
+        // bla.array[i] = {i, (short)(i+1)};
+        bla.array[i] = {(short)(i+1), i};
     }
     return bla;
 }
@@ -25,9 +27,8 @@ void printDeserializedStruct(OtherStruct& otherThing) {
     std::cout << "Printing deserialized!!!" << std::endl;
     for (int i=0; i<10; i++) {
         std::cout << "-------------------------------------" << std::endl;
-        std::cout << otherThing.array[i].qualityPlusAngle << std::endl;
-        std::cout << otherThing.array[i].x << std::endl;
-        std::cout << otherThing.array[i].yPlusType << std::endl;
+        std::cout << otherThing.array[i].frubas << std::endl;
+        std::cout << otherThing.array[i].brabas << std::endl;
         std::cout << "-------------------------------------" << std::endl;
     }
 }
@@ -43,9 +44,8 @@ void printSerializedStruct(char* byteArray) {
         std::memcpy(&bla, &byteArray[i], sizeof(MyStruct));
 
         std::cout << "-------------------------------------" << std::endl;
-        std::cout << bla.qualityPlusAngle << std::endl;
-        std::cout << bla.x << std::endl;
-        std::cout << bla.yPlusType << std::endl;
+        std::cout << bla.frubas << std::endl;
+        std::cout << bla.brabas << std::endl;
         std::cout << "-------------------------------------" << std::endl;
     }
 }
