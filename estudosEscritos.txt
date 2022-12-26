@@ -1,0 +1,5 @@
+tentar estudar alguma coisa todo dia, por mais pequena que seja....
+  - lista de conteúdos sobre spring/spring boot do
+  baeldung ou w3 school
+    -> https://www.baeldung.com/spring-boot
+  - fazer os pontos descritos no nativeUtils.txt
