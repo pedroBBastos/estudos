@@ -1,0 +1,48 @@
+docker ps -a ->> lista todos os containers
+docker image ls ->> lista todas as imagens
+
+docker build -t <tag> -f <file> . ->> para buildar uma imagem
+
+docker images === docker image ls ->> mostra as imagens existentes
+
+docker image rm <IMAGE_ID>
+
+docker rm <container name> -->>> para deletar um container
+
+para entrar em um container que já está rodando:
+ -> docker exec -it [container-id] bash
+
+---------------------------------
+
+buildar imagem para eu poder entrar em modo iterativo e poder entender melhor o que temlá dentro / o que é.....
+
+---------------------------------
+
+docker create -t -i <image_id> <command>
+  -> docker create -t -i <image_id> bash
+  -> -i --interative : Keep STDIN open even if not attached
+  -> -t --tty : Allocate a pseudo-TTY
+docker start -a -i <container_id>
+  -a, --attach               Attach STDOUT/STDERR and forward signals
+      --detach-keys string   Override the key sequence for detaching a container
+  -i, --interactive          Attach container's STDIN
+
+
+yum install openssh-server openssh-clients
+
+https://phoenixnap.com/kb/how-to-enable-ssh-centos-7
+https://serverfault.com/questions/824975/failed-to-get-d-bus-connection-operation-not-permitted
+https://techoverflow.net/2021/05/12/how-to-use-yum-in-dockerfile-correctly/
+https://serverfault.com/questions/381535/ssh-cannot-start-sftp-server-when-trying-to-force-internal-sftp
+
+---------------------------------
+
+Entrar no container como root
+  -> docker exec -u 0 -it 002a6efe35ee bash
+
+---------------------------------
+
+Remove all containers
+docker rm $(docker ps -a | grep -v zealous_mendeleev | awk 'NR>1 {print $1}')
+
+---------------------------------
