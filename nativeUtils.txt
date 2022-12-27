@@ -96,11 +96,15 @@ https://stackoverflow.com/questions/2301007/determine-word-size-of-my-processor
 https://stackoverflow.com/questions/19995440/c-cast-byte-array-to-struct
 -------------------------------------------
 
+https://engineering.linkedin.com/blog/2021/taming-memory-fragmentation-in-venice-with-jemalloc
+
+-------------------------------------------
+
 TODO
   lib para contagem de ciclos de clock - ok
-  projeto com CMake linkando libs dinamicas
+  projeto com CMake linkando libs dinamicas - ok (exemplo de linkagem da nossa lib de contagem)
+  testes unitarios com gtest
   projeto com OATPP
     -> loggers debug/info
-  testes unitarios com gtest
   estudar JNA
   Adress Sanitizer (ASAN)
