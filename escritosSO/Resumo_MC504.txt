@@ -1,0 +1,605 @@
+
+SO -> multiprogramação -> estudar os processos e arquiteturas responsáveis pela impressão de que o SO executa multiplos 
+                          processos e programas ao mesmo tempo (de forma paralela) 
+	
+Sub-divisão geral:
+
+   Virtualização de CPU --> Fazer com que uma CPU física ou parte dela aparente ter multiplas CPUs logicas, que irão processar 
+                            determinados processo, programas, etc
+   
+    Virtualização de    --> Fazer com que a memória física ou parte dela aparente ter um espaço de armazenamento lógico maior   
+        Memória             que especificado, possibilitando maior carga armazenamento de dados e processos que serão   
+                            executados.   
+
+      Concorrência      --> Execução "simultanea" de processos (ilusão de paralelismo), de forma que nem sempre um processo
+                            iniciado primeiro seja finalizado primeiro.
+
+      Persistência      -->
+
+
+  Virtualizar --> dar a impressão ao usuário ...
+	
+	Virtualização de cpu --> Aproveita o tempo livre do processador e faz com que o usuário tenha a impressão
+	                         de que vários processos estão executando juntos -> ilusão do tempo
+	
+	  Virtualização de   --> Ilusão de maior espaço para armazenamento. 
+	      Memória 
+
+
+Uniprogramming
+	--> Processador deve esperar que instrução de I/O se complete antes de prosseguir para proxima instrução 
+	    (I/O + escrita do que leu na memória)
+	
+Interrupção --> o próprio módulo de I/O avisa o processador que o processo de I/O terminou
+	
+	--> Mas o processador nao eh de fato interrompido. Ao final de cada instrução, ele checa alguma flag de interrupção para 
+	    saber se terminou ou não
+	--> Checada a flag, com o termino do I/O, o processador ainda tem o trabalho de ler os bytes do modulo de I/O e escrever 
+	    na memória
+		--> esse trabalho é do tratador de interrupções (interrupt handler)
+	
+Surge então a necessidade do DMA (Direct Memory Access) --> escreve direto na memória sem passar pelo processador. 
+                                                            Usa um controlador
+
+############################################################################################################################
+
+
+Multiprogramação --> Único processador pode executar vários programas
+	
+    --> Um subconjunto de jobs (codigo + dados) mantido na memória
+    --> Um job executado por vez
+    --> Quando há um I/O, troca de job
+
+Problemas:
+	--> Um job não pode acessar a memória do outro
+	--> Deve-se salvar os estados dos jobs ao trocar de job
+	--> Se um job não largar mão do processador, é preciso ter um jeito de deixar os outros jobs executarem
+		--> aqui será criado um timer, que irá interromper a execução de um job
+	--> Tem coisas que os jobs não podem fazer (instruções privilegiadas. Ex: um job nao pode mexer no reloginho)
+		--> operação em modo dual
+
+
+Processo
+
+	Pode ser:
+	--> Programa em execução
+		--> programa eh a receita. O processo eh a instanciação do programa que está sendo executada
+	
+	--> Consiste de:
+		--> Um programa executável
+		--> Dados que o programa precisa
+		--> Contexto de execução do programa -> estado do processo
+	
+	--> Também precisa de recursos: CPU, memória, I/O, arquivos
+	
+	Existem diferentes modelos de processos, alguns deles são:
+
+	Two-state process model
+		--> Define os estados do processo como running ou not-running
+		--> Se not-running --> Após (dispatch) --> passa para running
+		--> Se running     --> Após (pause)    --> passa para not-running
+		--> Faz uso de uma fila de processos
+		--> Dispatcher tambem é um processo (do SO)
+		
+	5-state process model
+		--> De initial --> passa para ready       --> passa para running --> final
+					   --> ou passa para blocked  --> passa para ready
+		--> Várias filas são utilizadas para ready, blocked, running
+			--> ready queue, blocked queue
+	
+	7-state process model
+		--> initial --> passa para ready      --> running --> final
+							                  --> blocked --> ready
+				    --> ou blocked/suspended
+				    --> ou ready/suspended
+		--> Quando processo é suspenso
+			--> não está disponivel para execução imediata
+			--> pode estar esperando por um evento
+				--> neste caso, condição de bloqueio eh independente da condição de suspensão
+				
+
+OS control structures
+
+	Tabelas são criadas para cada entidade gerenciada pelo SO
+		--> Memória
+		--> I/O
+		--> Arquivos
+		--> processos
+			--> PCB (Process Control Block) --> eh aqui que está toda informação do processo
+			
+
+Dispatcher --> Realiza a troca entre processos -> context switch
+		   --> Processo definido em baixo nivel (assembly)
+
+############################################################################################################################
+
+Scheduler (escalonador)
+	
+	Algoritmos para implementação do escalonador de processos:
+		
+		--> FIFO (First In First Out)
+		--> SJF  (Shortest Job First)
+		
+		--> Preempção (preemptive scheduling) --> quando o SO (atraves do Scheduler) pode interromper um processo para 
+		                                          iniciar ou continuar outro.
+
+			--> Escalonador pode retirar o privilégio de um processo a um recurso (a CPU)
+			--> FIFO e SJF não são preemptivos
+			--> STCF (Shortest Time-to-Completion First) (ou Preemptive Shortest Job First)
+			
+		--> Os Schedulers anteriores tem tempo de resposta ruim
+		
+		--> Round Robin (ele eh fair)
+			--> Define um time-slice para cada job, e os jobs são "quebrados"
+			--> Desse modo o tempo de resposta aumenta e melhora
+			--> Mas tem um overhead em cada troca de pedaços de jobs --> Ou seja, Aumenta o número de trocas
+				--> e quanto menor o time slice, maior o overhead (Tempo a mais pago pelo scheduler para fazer a troca)
+			--> Não tem um bom desempenho em turnaround (tTermino - tChegada)
+		
+		Multi-level feedback queue
+
+		--> Scheduler que segue algumas regras para executar os processos, fazendo uso do Round Robin
+
+		--> Regras são:
+
+		    --> Se prioridade do processo A > prioridade do processo B , então A executa e B não;
+		    --> Se prioridade de A = Prioridade de B, então A e B executam em RR;
+		    --> Quando um job entra no sistema, ele recebe a prioridade mais alta e é colocado no fila de maior prioridade;
+            --> Uma vez que um job consome seu tempo disponível em um determinado nível (independentemente de quantas vezes 
+                ele desistiu da CPU), sua prioridade é reduzida e ele desce para uma fila de menor prioridade;
+            --> Após algum período de tempo S, todos os jobs no sistema são movidos para a fila de maior prioridade.
+
+############################################################################################################################
+			
+
+Interrupção não mascarável (requisição de serviço – interrupção por hardware)
+    --> Ignora e tem precedência/preferência sobre todas as outras interrupções geradas por software, pelo teclado e por 
+        outros dispositivos. 
+    --> Esta interrupção nunca é cancelada (mascarada) por outra. O computador só envia interrupções não-mascaráveis ao 
+        CPU devido a um erro grave de memória ou quebra de corrente. 
+    --> A interrupção mascarável, pode ser desativada quando um programa necessita do CPU “só para si”.
+		
+############################################################################################################################
+
+PCB (Process Control Block) --> onde colocaremos todo o estado de um processo ao chavearmos entre processos 
+                            --> depois coloca o PCB do processo interrumpido na fila de espera correspondente 
+                                (blocked queue, ready queue, etc)
+
+     --> Em seguida são pegas as informações do PCB do processo que vai executar e são colocadas suas informações nos
+         registradores da máquina.
+
+
+(Ate aqui, T1 à T5)
+############################################################################################################################
+
+
+Virtualização de memória --> fornecimento, pelo SO, de uma área de memória inexistente para cada processo
+	--> espaço de endereçamento que cada processo enxerga
+
+Beneficios
+	--> facilita a programação
+	--> eficiencia em termos de espaço e tempo
+	--> garantia de isolamento para todos os processos, bem como para o SO
+
+Espaço de endereçamento
+	--> exclusivo de cada processo
+	--> abstração da memória física por parte do sistema operacional 
+		--> program code, heap, stack, etc...
+
+Gerenciamento de memória
+
+	--> bind de instruções e dados para a memória pode ser realizada em:
+	    - tempo de compilação
+	    - tempo de carregamento 
+	    - tempo de execução
+
+	--> Tradução do endereço virtual para o endereço físico é de responsabilidade do hardware
+		--> para tanto, o SO deve ser responsável pelo gerenciamento de memória
+		
+	--> Todo endereço que a CPU gera eh um endereço virtual --> CPU e processos só trabalham com endereço virtual
+	    - endereço físico eh o que a unidade de memória vê
+	    - endereços virtual e fisico são os mesmos se definidos em tempo de compilação ou de carregamento (load-time)
+	    - em runtime, eles são diferentes
+	
+	--> Para mapear endereço virtual no endereço físico, é necessário um dispositivo dedicado
+		- MMU (Memory-management unit) que fica no hardware
+		
+	--> Objetivos que devem ser cumpridos para virtualizar a memória
+		- proteção (um processo nao invadir o espaço de memoria de outro)
+		- permitir compartilhamento
+		- endereçamento esparso -> permitir que o endereçamento do processo não precise ficar todo contiguo na memória
+		- eficiencia
+		- portabilidade
+		
+	Escalonador de longo prazo x Escalonador de curto prazo
+	O primeiro eh chamado a cada término ou swapped out de processo, enquanto o de curto eh chamado em cada time slice
+
+	Base e Bound --> são dois registradores que limitam o espaço de memória utilizado por um processo na memória física
+	                 na alocação contigua
+
+	    --> Surge o problema de fragmentação interna: que é o espaço desperdiçado por um processo ou dado alocado, que não
+	                                                  ocupa todo os espaço de memória que foi disponibilizado para ele. 
+		
+		--> Já Fragmentação externa: são os espaços livres entre espaços que foram alocados processos ou dados, que não 
+		                             apresentam tamanho suficiente para alocar algo e acabam sendo desperdiçados. 
+
+		--> Foram apresentadas algumas estrategias de alocação de dados e processos na memória para ocupar os espaços
+		    da fragmentação externa:
+	        - Best-fit
+	        - First-fit
+	        - Next-fit
+
+############################################################################################################################
+
+Fork --> criação de processo filho a partir de um processo pai (Grátis Aqui kkk)
+
+Aula 21/10 - Segmentação da Memória (T08) - Alocação não-contigua
+	
+	Ao invés de dar uma área completa de memória que abarque área do programa, heap e stack, foram criados
+	segmentos virtuais para cada um desses elementos (3 áreas pra cada coisa ou mais áreas)
+		--> um processo passa a ser uma coleção de segmentos
+		--> base and bound definidos para cada segmento: tabela de segmentos com listagem de base and bounds para cada
+		--> na memória, cada segmento pode estar em lugares diferentes
+		--> agora consigo compartilhar os segmentos entre os processos. Em questão de segurança, é uma desvantagem
+	
+	Virtual address consiste em um par <segment-number, offset> 
+	    --> para caso for feito um swap-out, usado para conseguir reencontrar o mesmo segmento
+		
+		Cada processo tem uma tabela de segmentação (no hardware) que são podemos fazer um track atraves de 2 registradores:
+		--> Segment-Table Base Register (STBR): que aponta para a localização da tabela de segmento na memória.
+		--> Segment-Table Length Register (STLR): que indica o número de segmentos usados ​​por um programa
+		--> tabelas em hardware pois será necessária para recalcular cada endereço necessário. Se ficar em software da ruim.
+		
+	--> Na troca de contexto, colocaremos a tabela de segmentos no PCB do processo
+
+	Como existe um Virtual Address para um dado processo, é necessário fazer translation para encontrar o endereço correto
+	na memória física (Lembre-se que processos diferentes podem compartilhar mesmo endereço virtual)
+	--> Endereço físico = valor base Register + offset
+
+	
+	Segmentação cria particionamento variável --> gera fragmentação externa (buracos esparramados livres na memória)
+		--> resolvido por um algoritmo de compactação, mas que tem custo considerável
+		
+
+Lembrar: CPU sempre pensa em endereços virtuais
+
+############################################################################################################################
+
+Aula 26/10 - Paginação (T09) - Abordagem diferente com alocação contigua
+
+	Uso de unidade de tamanho fixo
+		--> mata a fragmentação externa, mas ainda não mata a interna
+	
+	- Cria blocos pequenos na memória
+	- Cria blocos na memória física (frame) e virtual (página) de mesmo tamanho
+	"linha 15 da página na linha 15 da moldura" -> mesmo offset
+	
+	--> As Páginas ficam virtualizadas na memória. 
+	    --> Por conta do tamanho, as tabelas de páginas são mantidas na memória física, na área do kernel
+	       (usuário não pode mexer. Deve ser área de memória protegida)
+	
+	--> Para poder fazer um acesso a memória física temos que fazer dois acessos: 
+	    --> Um a tabela de páginas para saber em que moldura minha página está e
+	    --> Outro na memória física de fato
+
+	VPN: Virtual Page Number
+	PFN: Physical Frame Number
+
+	- Para acessar o processo ou dado:
+	--> VPN é tomado e aponta para page Table, que em seguida aponta para PFN. Este é somado ao offset carregado junto ao
+	    VPN, que é traduzido em um endereço físico de memória.
+
+	O PFN também carrega alguns bits de validação para outras informações sobre o processo armazenado 
+	(Valid, Read/Write, Dirty, etc)
+	
+	Segmentação --> bom para o programador (FICA TUDO SEPARADINHO) mas ruim para o hardware
+	Paginação   --> no HARDWARE. Acaba com a fragmentação externa, mas ainda pode ter fragmentação interna
+	
+	Conforme a bagaça foi evoluindo, uma das ideias foi 
+	    --> Dividir o programa em segmentos e paginar cada segmento
+		--> Mas temos que ter duas traduções: qual o segmento que quero, a página que quero e o frame
+		
+	--> Carregaremos apenas as páginas necessárias para executar o programa naquele momento. Não precisamos mais colocar
+	    todo o programa na memória para poder executá-lo.
+	
+	--> Buffer: permite o desacoplamento da velocidade de produção e consumo de alguma coisa
+	    Ajuda a gerenciar paginas carregadas para execução que serão consumidas
+		
+	
+############################################################################################################################
+
+
+Aula 28/10 - T10 - Translation Lockaside Buffer (TLB)
+
+	--> É uma parte da MMU (hardware)
+	--> É um cache de hardware de traduções de endereços virtuais para endereços físicos (mais utilizados)
+	--> Economizar o custo ao acesso à tabela de páginas
+	--> É dado um TLB para cada cache, ficando maior quanto maior for o nível do cache
+	--> Um mapa do número da página virtual no frame onde ela está
+
+	- O cache mantem as traduções através de uma politica chamada LRU (Last Recently Used)
+
+############################################################################################################################
+
+Aula 04/11 - T11 - Smaller Page Tables
+
+	- Tempo de acesso efetivo (EAT) é a taxa de tempo que leva para TLB acessar um endereço fisico na memoria no caso de 
+	  não encontrar a página no buffer. (Se MISS, ocorrer EAT, se HIT, acessa diretamente pos pagina estava no buffer) 
+
+    Exemplo de calculo para traduzir pagina virtual em frame físico:
+
+	Considerando uma memória de 16KB de endereçamento, com páginas de 1KB.
+	Assim, eu preciso de 14 bits para representar o endereço virtual
+		-> 2^4 (16 páginas) "+" 1KB (= 2^10 (offset))
+
+    
+    Diferentes approachs foram apresentadas
+    - Paged Sementation (Approach Hibrida)
+    - Hierarchical PageTables
+    - Hashed Page Tables
+    - Inverted Page Tables
+
+############################################################################################################################
+
+T12 - Swapping mechanisms (uso de memória além da memória principal -> uso do disco)
+
+    - Swap Space --> espaço reservado no disco para movimentar páginas para dentro e para fora
+    - É feita Paginação sob demanda --> trazer uma página para memória apenas quando ela é necessaria
+
+    - "lazy" --> sempre algo que acontece sob demanda (contrário de "eager" --> tudo que eh possivel vai fazendo)
+
+    - Pagefault e PageFalt Control Flow
+    - Performance da Demanda de paginação
+
+    (revisar virtualização de memória: bastante continha legal para pegar)
+
+
+(principio da localidade)
+
+T13 - Swapping policies
+
+    Page replacement --> diferentes algoritmos, com diferentes politicas para troca de páginas
+
+    - First-In First-Out
+    - Optimal
+    - Least-Recently-Used
+    - Least-Recently-Used Approximation
+    - Counting-Based
+        - LFU (Least-Frequently Used) Algorithm: Replaces page with smallest count
+        - MFU (Most-Frequently Used) Algorithm: Based on the argument that the page with the smallest count was probably 
+                                                just brought in and has yet to be used
+
+    Global vs. Local Allocation
+
+    Global replacement
+    - Replacement frame is selected from the set of all frames.
+    - One process can get a frame from another.
+    - Processes cannot control their own page-fault rate.
+
+    Local replacement
+    - Each process gets frames from only its own set of allocated frames.
+    - Process may be hindered by not having access to other, less used, frames.
+      
+
+    Além disso, são apresentadas outras issues para Swapping policies, como por exemplo
+    - Non-Uniform Memory Access
+    - Prepaging
+    - Clustering, Grouping
+    - Dirty Pages
+    - Page Size
+    - TLB Reach
+    - Program Structure
+    - I/O Interlock 
+
+    Endereço virtual -> VPN + offset
+
+
+(Até aqui T6 à T13)
+############################################################################################################################
+
+
+Threads e concorrencia
+
+	concorrencia -> execução simultânea
+	execução não eh mais determinística -> a ordem de execução (do que eh executado) não é mais a mesma
+		-> o processador pode executar em ordens diferentes as partes de código concorrentes
+	threads -> TODAS AS THREADS DE UM PROGRAMA COMPARTILHAM O MESMO ESPAÇO DE ENDEREÇAMENTO, mas cada uma possui um
+	program counter diferente
+	
+	uso das Thread Control Blocks
+	
+	existem as threads de hardware e as threads de software
+	
+	agora há a separação -> "processo eh o pesado" (unidade de recursos) " e a thread eh o leve" (unidade de dispatching)
+		-> gerenciamento de tempo será feito olhando para as threads
+	escalonador agora escalona threads, não mais processos
+	não há paralelismo dentro da thread
+	as threads são independentes, podem executar em qualquer sequencia
+	se houver um bloqueio do processo, todas as threads são bloqueadas
+	elas terminam quando o processo termina
+	
+	Exemplo do counter -> duas threads leram um mesmo valor de counter ao mesmo tempo, daí quando o valor vai ser
+	atualizado é atualizado apenas uma vez (não soma +1 e depois +1). O valor de counter eh sobreescrito com o mesmo valor
+	(que foi somado) pelas duas threads.
+	
+	a ordem de execução das threads eh não deterministica
+	-> internamente, a thread executa sequencialmente
+	
+	race condition -> o valor do último prevalece na corrida pela atualização da variável compartilhada entre as threads
+	
+	seção críticas -> segmentos de código em uma ou mais threads que podem estar envolvidas em uma race condition
+	
+	a solução do problema eh ter algum mecanismo que impeça de uma thread executar enquanto outra estiver em sua sessão crítica (exclusão mútua)
+	
+	busy-waiting -> comendo uso do processador pra fazer nada (loops que fazem nada enquanto tem uma flag de lock, por exemplo)
+	
+	escalonador preemptivo -> implementa time-slices
+		-> necessário para funcionar o uso da instrução atômica 'TestAndSet'. Pq se não, a chamada de lock ficaria presa ao loop
+		e a thread que tem o lock nunca o liberaria
+	
+	perguntas sobre o queuing model
+		-> do modo anterior (1o uso do TestAndSet), todas as threads ficavam num spinning sobre a variavel flag para 
+		poder adquirir o lock. Mas isso não garante que após sair do sppining todas as threads teriam direito de pegar o lock para si.
+		Posso ter o caso de uma thread que seja a desfavorecida e nunca consiga pegar o lock -> STARVATION
+		-> fila eh para não ter starvation. Quando eu der unlock, as threads que queriam ter o lock estaram na fila, e não
+		preciso voltar para o código inicial do método lock para poder sair de um busy-waiting =: basta fazer o unpark a partir
+		da 1a thread na fila e tocar a vida
+		-> objetivo do guard -> evitar race condition no acesso às variáveis de lock (estrutura do lock)
+		
+	-> ter em mente que os exemplos até aqui estão ocorrendo num contexto de uso de apenas um processador, executando uma thread por vez
+		-> lembrar que quando dá o park() a thread eh colocada pra dormir (sai do contexto de execução (deixa de usar a CPU)
+		e volta pra fila de processos ready)
+	
+	-> nunca usar um dado compartilhado entre threads sem uso de lock
+	
+	-------------------------
+	
+	variáveis de condição -> usadas para eu poder fazer o join de execução de threads filhas para um único fluxo de execução
+	na thread pai
+	
+	wait() -> abandona o uso do lock (para outras threads poderem executar) e coloca a thread atual pra dormir
+	
+	-> condition wait -> wait recebe a variável de condição (para identificação de qual evento estamos esperando) e mais
+	um mutex para que quando a thread for acordada, ela recebe o lock pelo mutexvpassado como parâmetro e consiga executar
+	
+	-------------------------
+	
+	os exemplos são nos casos base (apenas interrupção pelo escalonador), join e produtor/consumidor
+	
+	-------------------------
+	
+	exclusão mútua
+		-> fazer com que duas threads não entrem em suas seções críticas ao mesmo tempo
+		-> locks resolvem esse problema
+	
+	threads compartilham espaço de dados do processo
+	
+	ordenação
+		-> fazer com que uma thread faça algo apenas depois que outra thread faça alguma outra coisa
+		-> variáveis de condição tratam isso
+		-> semáforos irão tratar isso de outro modo...
+	
+	-------------------------
+	
+	lembrar que o controle pode ser interrompido pelo escalonador enquanto uma thread está em sua sessão crítica.
+	O uso de locks e semáforos previne que haja execução de outras threads mexendo em dados compartilhados enquanto
+	a thread inicial estiver em sua seção crítica.
+	
+	-------------------------
+	
+	semáforos - possuem um estado (no caso, será um valor integer)
+			  - podem ser usados tanto como locks como variáveis de condição
+		-> sem_wait(&semaforo) -> decrementa o valor e se este valor for menor que 0, bota a thread pra dormir
+		-> sem_post(&semaforo) -> incrementa o valor e se este for menor ou igual a zero
+		(jeito de se verificar se há alguma thread dormindo) acorda alguma thread
+		
+		
+		(no exemplo de produtor/consumidor dá problema se tentar usar como lock.
+		Se houver mais de um produtor/consumidor, posso ter race condition nos atributos do buffer)
+			-> semáforo binário para fazer essa proteção (exclusão mútua)
+			-> semáforos binários iniciam em 1
+		
+		número do semáforo eh sempre o número de threads que estão na fila
+	-------------------------
+	
+	read and write lock
+		-> leitores podem concorrer entre si, pq ler não eh uma operação destrutiva
+		-> se tem vários lendo, quem for escrever deve esperar todos os leitores terminarem
+		-> quando alguém estiver escrevendo, não posso ler
+		-> writers devem ser exclusivos entre si (concorrem pelo mesmo recurso)
+		
+	o jeito que foi implementado favorece os readers, pq se tiver muita leitura pode provocar o starvation dos writers.
+	Tbem será pouco eficiente se ocorrer a mesma coisa, muitos readers para poucos writers.
+	Uma solução para tentar tornar mais justo seria aplicar um round-robin (revesar a prioridade dos readers e writers)
+	
+	deadlock no problema dos hashis -> travar a roda de forma com que os pensadores não consigam ter acesso aos hashis
+		-> deadlock pode levar a starvation
+			-> espera circular, recurso eh exclusivo (não pode ser compartilhado entre threads e usado apenas por uma thread por vez), 
+			hold and wait (dorme segurando um recurso),
+			o sistema não ser preemptivo (não haver uma entidade superior que possa arrancar o recurso da mão de alguém que está o segurando)
+	
+	-------------------------
+	
+	pergunta sobre manter o while ao invés de voltar o if na checagem de variável de controle
+		-> eh mantido o while pois se houver outra thread que possa dar o signal, a alteração da variável de controle pode
+		não ter sido feita. Por isso um while para retestar a variável. Se apenas a thread 1 existisse
+		eu teria a certeza de que a variável foi alterada, então o if bastaria
+		
+	-------------------------
+	
+	pergunta sobre o último parametro do sem_wait(_, _, p) -> eh o número de threads que podem passar antes que trave
+	
+	-------------------------
+	
+	deadlocks
+		-> bloqueio permanente de dois ou mais processos ou therads que competem por recursos ou comunicam entre si
+			-> recurso: qualquer coisa que a thread precisa para funcionar (CPU, disk space, memory, lock)
+				-> preemptivo (SO pode tomar) ou não preemptivo (a thread toma pra ela e continua com ela)
+		-> espera circular por recursos
+		-> deadlock gera starvation MAS NÃO VICE-VERSA (starvation não provoca deadlock)
+		-> não tem uma solução eficiente
+	
+	condições para ocorrer um deadlock
+		-> espera circular, 
+		-> recurso eh exclusivo (não pode ser compartilhado entre threads e usado apenas por uma thread por vez), 
+		-> hold and wait (dorme segurando um recurso),
+		-> o sistema não ser preemptivo (não haver uma entidade superior que possa arrancar o recurso da mão de alguém que está o segurando)
+	
+	gerenciando deadlocks
+		-> prevenção (vacina): se eu garantir que alguma das 4 condições acima não ocorrer, garanto que não haverá deadlock
+			
+			-> p/ recurso exclusivo: não precisa caso os recursos sejam compartilhados ou sejam infinitos
+				-> caso contrario, must hold
+			
+			-> p/ hold and wait: um processo não pode pedir os recursos de cada vez. Deve pedir todos de uma vez só
+				-> não permitir recursos se já estiver com outros
+				-> mas pode acontecer tbem de haver uma baixa utilização de recursos, pq o processo tem tantos na mão
+				que não consegue utilizar de forma eficiente todos.
+				-> Tbem pode acontecer do processo pedir mais do que ele precisaria. Pode levar a starvation
+			
+			-> p/ não preempção: fazer com que seja possível preemptar qualquer recurso que o processo possa utilizar
+			
+			-> p/ espera circular: fazer com que os recursos estejam ordenados entre si e fazer com que os processos
+									os peçam sempre nessa ordem
+			
+		-> evitar (uso de máscara e distanciamento): não atender (delay) requisições que podem levar ao acontecimento de um deadlock
+		
+			-> tem um algoritmo pra isso, que analisa a necessidade de recursos de todos os processos e a partir do algoritmo vai entregando
+			para que ele acredita que vai devolver os recursos (algoritmo do banqueiro)
+			-> each process uses the resources in the following sequence -> request, use, release
+			-> requisição e liberação de recursos via system calls (os processos nao interferem diretamente)
+			
+			-> Safe State: quando um processo pedir um recurso, o sistema deve verificar se o uso do recurso pelo processo
+			deixa o sistema em um estado seguro
+			
+			(lembrar que recursos são sempre alocados a processos e não a threads - definição do safe state usa P como notação para processo)
+			
+		-> tratamento/detecção (UTI): permitir que o sistem entre em deadlock e então restaurar
+		
+			-> uso de RAG -> Resource Allocation Graph
+				-> grafo wait-for -> arranca os recursos para deixar apenas um grafo de dependencias entre processos
+				-> algoritmo tenta encontrar um ciclo no grafo -> algoritmo de complexidade O(n^2)
+					-> se rodado muito frequentemente pode onerar a execução dos processo
+					-> se demorar muito para ser rodado, pode deixar de identificar os deadlocks
+			
+			-> terminação de processo
+				-> abortar todos os processos lockados
+				-> abortar um processo por vez até o deadlock se desfazer
+			-> verificar em que ordem devemos abortar
+			
+			-> preempção do recurso 
+				-> selecionar uma vítima para perder o recurso
+				-> efetuar rollback. Retornar para um estado segura e continuar dali
+				-> pode acontecer starvation -> um processo sempre pode ser escolhido como vítima. Colocar um contador de rollbacks efetuados
+			
+		-> ignorar: fingir que o deadlock nunca aconteceu
+			-> ostrich algorithm (algoritmo do avestruz) -> enfia a cabeça na terra e fingi que nada aconteceu
+			-> o que a maioria dos sistemas faz........
+			
+		-> Threads vs sistemas baseados em eventos
+			-> a ideia eh basicamente um loop infinito pegando e tratando os eventos
+			-> enquanto o evente handler está processando, essa eh a única coisa atividade em execução no sistema
+			-> detecção de eventos -> métodos da API do sistema -> select() e poll() -> são system calls
+				-> assim, em uma single CPU, tais métodos não podem ser interrompidos -> logo os problemas
+				de concorrencia neste contexto não existirão (não há necessidade de obter ou liberar locks) (basic event-based approach)
+						-> NO BLOCKING CALLS ALLOWED -> travariamos a única coisa que estamos rodando no sistema

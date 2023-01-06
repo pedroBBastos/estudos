@@ -1,0 +1,149 @@
+-> oq seria I/O programado??
+
+T23 - I/O Devices
+
+	-> The Canonical Protocol 
+		-> The hardware interface: contem registradores (Status, Command, Data) para poder ler/escrever
+		-> The device’s internal structure: contém implementação para o sistema interagir com o device
+	
+	-> busy-wait até o device não estar mais busy (verificando registrador 'Status')
+	-> como o SO pode evitar busy-wait (evitando ocupação da CPU - polling) para ter acesso ao dispositivo
+		-> I/O assincrono -> buffer continua ocupado, não eh liberado só pq a CPU não está trabalhando naquele processo
+	
+	-> More Efficient Data Movement With DMA
+		-> DMA -> usado para não ter uso de CPU para cópia de dados para trocar de contexto numa chamada de IO
+		-> DMA (Direct Memory Access) -> não são mais instruções de CPU que estão sendo usadas
+		para fazer a transferencia de dados
+	
+	-> como o hardware se comunica com os devices?
+		-> através de instruções de I/O privilegiadas (executadas apenas no modo kernel)
+			-> instruções bem definidas pelo SO que dizem como o dispositivo tinha que reagir.
+			-> mas conforme a qtd de dispositivos proliferou foi necessário um outro jeito
+		-> I/O mapeado na memória
+			-> o hardware reserva alguns endereços de memória para servir de interface entre a CPU e o dispositivo
+	
+	-> General-Purpose OS -> SO que consegue mascarar as diferenças entre os diversos dispositivos e consegue rodar
+	independentemente deles, deixando o usuário mais a vontade
+	
+	-> a aplicação e o sistema de arquivos não sabem sobre as especificidades da classe de disco que estão usando
+		-> camadas de abstração
+		At the lowest level in the OS must know in detail how a device works.
+		This piece of software is a device driver which encapsulates all the specifics of device interaction.
+
+--------
+		
+T24 - Hard Disk Drives
+
+	-> The hard-disk drive interface (desenho/detalhamento de um disco rígido)
+		-> large number of sectors (usually, 512-byte blocks). The sectors are numbered from to on a disk with sectors.
+		-> Multi-sector operations are possible
+			-> Many file systems will read or write 4KB or more at a time.
+			-> a single 512- byte write is atomic
+		-> Accessing two blocks that are near one-another within the drive’s address space is faster 
+		than accessing two blocks that are far apart.
+	
+	-> Geometria básica -> olhar slide
+		-> importante: cabeça do disco -> onde são lidas/escritas informações nos setores do disco
+	
+	-> Rotational delay
+		-> Time for the desired sector to reach the disk head
+	-> Seek Time
+		-> The time to move head to the track containing the desired sector. It is one of the most costly disk operations.
+		-> Phases of Seek: Acceleration -> Coasting -> Deceleration -> Settling
+			Acceleration: The disk arm gets moving.
+			Coasting: The arm is moving at full speed.
+			Deceleration: The arm slows down.
+			Settling: The head is carefully positioned over the correct track.
+	
+	-> Phases of I/O: Seek -> Rotational delay -> Transfer
+		-> Transfer: Data is either actually read from or written to the surface.
+		
+	-> Disk Scheduling -> o SO tem um escalonador de disco
+		-> dirá em que order colocará as requisições de I/O para o driver
+		-> algoritmos
+			-> SSTF (Shortest Seek Time First)
+			-> OS can simply implement Nearest-block-first (NBF)
+			-> Elevator (a.k.a. SCAN or C-SCAN)
+			-> On modern drives, both seek and rotation are roughly equivalent: Thus, SPTF (Shortest Positioning Time First) is useful.
+
+--------
+		
+T25 - Hard Disk Scheduling -> este slide inteiro parece difícil de entender
+	-> ver a aula
+
+--------
+
+T26 - RAID
+
+	-> Set of physical disk drives viewed by the operating system as a single logical drive.
+	-> Data is distributed across the physical drives of an array for higher reliability and higher data-transfer rates.
+
+	-> o que é mean time to failure (MTTF)?
+	
+	-> daqui pra frente é dorgas. Ver a aula
+	
+--------
+
+T27 - Files and Directories
+
+	-> Persistent Storage: A persistent device keeps data intact even if there is a power loss.
+	-> em Unix style systems, as abstrações existentes são Arquivos e Diretórios
+		-> tecnicamente eles não tem diferença entre si, mas desenpenham um papel diferente no sistema
+
+	Arquivo -> simplesmente um array linear de bytes, que pode ser lido ou escrito
+	
+	Cada arquivo ou diretório tem um inode -> metadados do arquivo -> dados que permitem manipular o arquivo
+		-> todo inode tem um inode number (eh o "id" do arquivo) -> o usuário não consegue vem esse número
+		-> informações em um inode:
+			- tipo do arquivo, permissões, link count (meio que um contador de quantos acessos aquele arquivo possui no momento),
+			user Id, group Id, tamanho do arquivo, time stamps, etc
+			- tem apontadores para os blocos onde estão os dados do referido arquivo
+	
+	Um inode eh uma entrada em uma inode table, que eh a tabela que guarda todos os arquivos do sistema
+	
+	Manuseio dos arquivos dado por API contendo as system calls necessárias
+	
+--------
+
+https://www.tecmundo.com.br/disco-rigido/1913-desfragmentacao-de-disco-por-que-fazer-e-como-ocorre-.htm
+(NTFS é o sistema de arquivos padrão do Windows NT)
+
+T28 - File System Implementation
+
+como implementar um sistema de arquivo
+
+o que pensar:
+	- as estruturas de dados utilizadas para salvar os dados em disco
+		
+		- no disco é salvo o inode + os dados referente aquele arquivo (creio que de forma contigua)
+		- são necessárias estruturas de alocação: to track whether inodes or data blocks are free or allocated
+			- free list -> uma lista ligada para poder ir pegando os blocos livres -> não usa memória pq um bloco aponta para o próximo livre e assim por diante
+			- bitmap -> usado para indicar quais blocos estão livres (0 ou 1) -> usa mais memória
+				- bitmap para o inode, bitmap para os dados.
+		- preciso ainda de um superblock, que guardará as informações sobre o sistema de arquivo, quantos blocos tem, quantos inodes,
+		local de cada inode, etc. Conta como o disco está organizado. Em qualquer disco, o superbloco está na 1a posição
+		do disco (no primeiro bloco).
+		- quando monta o file sistema, o OS vai e lê o superblock para iniciar corretamente as variaveis que precisa para adicionar
+		o volume na file system tree.
+		
+		- inode tem apontadores diretos (apontam direto para blocos onde estão os dados do arquivo) 
+		e faz uso de multi-level index
+			- multi-level index -> usada para um inode poder representar um arquivo grnade (exemplo no slide era de mais de 60KB)
+				- um multi-level index aponta para um bloco que contem mais apontadores. E cada apontador por apontar pra mais
+				blocos com mais apontadores. E assim por diante...
+		
+		- para não usar tantos apontadores
+			-> extents: são simplesmente ponteiros de disco mais um length (em blocos - sequenciais)
+				-> são menos flexíveis mas são mais compactos
+				
+		- diretório
+			- consiste basicamente numa lista de pares (nome textual de um arquivo, inode number). Ex:
+				5 - .
+				7 - ..
+				43 - frubas.txt
+				22 - brabas.pdf
+			- são tratados como tipos especiais de arquivos. Tbem vai ter um inode pra ele mas com um tipo diferente
+		
+	- os métodos de acesso que o sistema usará
+		
+		- uso de métodos open() e etc, resolver os caminhos "/foo/bar"
