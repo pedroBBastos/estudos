@@ -80,6 +80,9 @@ cout << getArrayLength;
 
 https://www.geeksforgeeks.org/multithreading-in-cpp/
 
+detach call to leave thread on its own (do not wait for it to finish)
+https://stackoverflow.com/questions/21619682/sigabrt-signal-received-when-creating-a-stdthread-c11
+
 -------------------------------------------
 
 copy array
@@ -127,6 +130,33 @@ int main() {
 
 -------------------------------------------
 
+https://stackoverflow.com/questions/1246260/why-dont-c-header-files-increase-the-binarys-size
+
+-------------------------------------------
+
+Most Efficient ways to read a file into a std::string
+https://insanecoding.blogspot.com/2011/11/how-to-read-in-file-in-c.html
+
+-------------------------------------------
+
+https://www.prepbytes.com/blog/linked-list/merge-two-unsorted-linked-lists-to-get-a-sorted-list/
+https://stackoverflow.com/questions/1449703/how-to-append-a-listt-object-to-another
+
+-------------------------------------------
+
+https://unix.stackexchange.com/questions/468766/understanding-output-of-lscpu
+
+-------------------------------------------
+
+https://stackoverflow.com/questions/11041299/python-h-no-such-file-or-directory
+
+./configure --prefix=/opt/python3.7 --enable-shared
+make
+make test
+sudo make install
+
+-------------------------------------------
+
 TODO
   lib para contagem de ciclos de clock - ok
   projeto com CMake linkando libs dinamicas - ok (exemplo de linkagem da nossa lib de contagem)
@@ -135,3 +165,6 @@ TODO
     -> loggers debug/info
   estudar JNA
   Adress Sanitizer (ASAN)
+
+
+"/home/pedro.bastos/videoFacesResultTest/video_examples/teste/video_0.20_0.35.mp4"
