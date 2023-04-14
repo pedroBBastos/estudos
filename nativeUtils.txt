@@ -168,3 +168,15 @@ TODO
 
 
 "/home/pedro.bastos/videoFacesResultTest/video_examples/teste/video_0.20_0.35.mp4"
+
+-------------------------------------------
+
+std::multiset
+https://stackoverflow.com/questions/15582504/is-there-a-sorted-container-in-the-stl
+https://en.cppreference.com/w/cpp/container/multiset
+https://stackoverflow.com/questions/9167745/in-stdmultiset-is-there-a-function-or-algorithm-to-erase-just-one-sample-unic
+
+-------------------------------------------
+
+nunca dar throw sem tratamento dentro de uma thread separada kkk
+https://stackoverflow.com/questions/45783126/exception-not-caught-if-raised-after-spawning-stdthread
