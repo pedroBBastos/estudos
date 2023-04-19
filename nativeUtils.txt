@@ -180,3 +180,8 @@ https://stackoverflow.com/questions/9167745/in-stdmultiset-is-there-a-function-o
 
 nunca dar throw sem tratamento dentro de uma thread separada kkk
 https://stackoverflow.com/questions/45783126/exception-not-caught-if-raised-after-spawning-stdthread
+
+-------------------------------------------
+
+if statements with Regex - shell script
+https://www.baeldung.com/linux/regex-inside-if-clause
