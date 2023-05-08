@@ -185,3 +185,22 @@ https://stackoverflow.com/questions/45783126/exception-not-caught-if-raised-afte
 
 if statements with Regex - shell script
 https://www.baeldung.com/linux/regex-inside-if-clause
+
+-------------------------------------------
+reading file into byte buffer
+
+long MatcherFacade::readTemplatesFromFile2(const std::string& tptPath, char **buffer) {
+  FILE *fileptr;
+  //  char *buffer;
+  long filelen;
+
+  fileptr = fopen(tptPath.c_str(), "rb");  // Open the file in binary mode
+  fseek(fileptr, 0, SEEK_END);          // Jump to the end of the file
+  filelen = ftell(fileptr);             // Get the current byte offset in the file
+  rewind(fileptr);                      // Jump back to the beginning of the file
+
+  *buffer = (char *)malloc(filelen * sizeof(char)); // Enough memory for the file
+  fread(*buffer, filelen, 1, fileptr); // Read in the entire file
+  fclose(fileptr); // Close the file
+  return filelen;
+}
