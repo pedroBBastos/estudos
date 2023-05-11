@@ -204,3 +204,8 @@ long MatcherFacade::readTemplatesFromFile2(const std::string& tptPath, char **bu
   fclose(fileptr); // Close the file
   return filelen;
 }
+
+-------------------------------------------
+
+lembrar que cada máquina tem seu clock e que isso interfere bastante quando falamos testes de performance
+principalmente com gigantescas quantidades de registros.... (1e6 ++)
