@@ -209,3 +209,16 @@ long MatcherFacade::readTemplatesFromFile2(const std::string& tptPath, char **bu
 
 lembrar que cada máquina tem seu clock e que isso interfere bastante quando falamos testes de performance
 principalmente com gigantescas quantidades de registros.... (1e6 ++)
+
+-------------------------------------------
+
+GCC é mais antigo, então não tem tantas otimizações quanto compiladores mais recentes tal como o LLVM.
+  -> LLVM compila código C++???
+  -> https://clang.llvm.org/
+  -> https://stackoverflow.com/questions/9148488/how-do-i-compile-c-with-clang
+
+-------------------------------------------
+
+set(CMAKE_EXPORT_COMPILE_COMMANDS true) -> para imprimir flags de debug em todos os objetos se colocado no CMkaeList da raiz
+set(CMAKE_CXX_FLAGS_DEBUG "-fPIC -O3 -DNDEBUG -s") -> colocar no CMakeList da raiz para afetar todos os objetos
+set(CMAKE_CXX_FLAGS_RELEASE "-fPIC -O3 -DNDEBUG -s") -> colocar no CMakeList da raiz para afetar todos os objetos
