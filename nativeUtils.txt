@@ -222,3 +222,20 @@ GCC é mais antigo, então não tem tantas otimizações quanto compiladores mai
 set(CMAKE_EXPORT_COMPILE_COMMANDS true) -> para imprimir flags de debug em todos os objetos se colocado no CMkaeList da raiz
 set(CMAKE_CXX_FLAGS_DEBUG "-fPIC -O3 -DNDEBUG -s") -> colocar no CMakeList da raiz para afetar todos os objetos
 set(CMAKE_CXX_FLAGS_RELEASE "-fPIC -O3 -DNDEBUG -s") -> colocar no CMakeList da raiz para afetar todos os objetos
+
+-------------------------------------------
+
+https://www.linuxfoundation.org/blog/blog/classic-sysadmin-understanding-linux-file-permissions
+
+-------------------------------------------
+
+mutex IPC (interprocess comunication)
+
+https://stackoverflow.com/questions/42628949/using-pthread-mutex-shared-between-processes-correctly
+https://pubs.opengroup.org/onlinepubs/007904875/functions/shm_open.html
+https://stackoverflow.com/questions/36629713/shm-unlink-from-the-shell
+
+-------------------------------------------
+
+o que consegui fazer dar certo!!
+https://stackoverflow.com/questions/12439099/interprocess-reader-writer-lock-with-boost
