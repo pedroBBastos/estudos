@@ -239,3 +239,15 @@ https://stackoverflow.com/questions/36629713/shm-unlink-from-the-shell
 
 o que consegui fazer dar certo!!
 https://stackoverflow.com/questions/12439099/interprocess-reader-writer-lock-with-boost
+
+-------------------------------------------
+Para printar um u_int8 como um HEX
+//  printf("%02X ", reference[0]);
+//  printf("%02X ", reference[1]);
+
+-------------------------------------------
+
+boomm...
+pq às vezes é melhor deixar alguns headers na implementação?? no .cpp...
+  -> pq justamente ficarão apenas na implementação
+  -> se alguém for usar uma lib que implementei e der um include em um .h meu não irá pegar os .h adicionados na implementação....
