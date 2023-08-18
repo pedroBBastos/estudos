@@ -54,7 +54,7 @@ E tbem podemos fazer apenas um ou outro (compilação e/ou linking)
  output consists of object files output"
 
 -------------------------------------------
-
+gbscluster-5.0.0-5000.x86_64.rpm
 readelf -d  /path/to/library.so | grep SONAME
 
 -------------------------------------------
@@ -256,3 +256,11 @@ pq às vezes é melhor deixar alguns headers na implementação?? no .cpp...
 
 Valgrind tool suite (massif and etc...)
 https://valgrind.org/info/tools.html
+
+-------------------------------------------
+
+Para ver todas as conexões TCP abertas via websocket (both ways)
+  netstat -tuplna | grep 8080
+
+Para contagem de threads de um processo
+  ps -o thcount 189310
