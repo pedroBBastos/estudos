@@ -264,3 +264,8 @@ Para ver todas as conexões TCP abertas via websocket (both ways)
 
 Para contagem de threads de um processo
   ps -o thcount 189310
+
+-------------------------------------------
+
+gerando bytes aleatórios
+https://stackoverflow.com/questions/25298585/efficiently-generating-random-bytes-of-data-in-c11-14
