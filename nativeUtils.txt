@@ -269,3 +269,16 @@ Para contagem de threads de um processo
 
 gerando bytes aleatórios
 https://stackoverflow.com/questions/25298585/efficiently-generating-random-bytes-of-data-in-c11-14
+
+-------------------------------------------
+
+-> Olha aí a explicação do pq o calloc = 0 quando otimizados não funcionaram.....
+  -> https://stackoverflow.com/questions/73555398/can-i-prevent-the-gcc-optimizer-from-delaying-memory-allocation
+
+A simple and ugly way to ensure that the memory buffer gets its hardware backing would be to find the smallest possible
+page size on your architecture (which would be 4 kiB on a x86_64, for example, so 1024 of those integers (well, in most
+cases)) and then touch each (possible) page of that memory beforehand, as in: for (size_t i = 0; i < 0x80000000; i += 1024) buffer[i] = 1;
+
+
+That may well be the case. I believe the point was that 0 might get optimized away by the kernel by swapping the page for a shared
+read-only zero page (perhaps later on), not that it must happen.
